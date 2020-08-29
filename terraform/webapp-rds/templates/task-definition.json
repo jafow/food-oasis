@@ -1,0 +1,22 @@
+[
+  {
+    "name": "${container_name}",
+    "image": "foodoasisla/foodoasisla:1.0.17.",
+    "cpu": ${container_cpu},
+    "memory": ${container_memory},
+    "portMappings": [
+      { "containerPort": 80, "hostPort": 80 },
+      { "containerPort": 443, "hostPort": 443 }
+    ],
+    "essential": true,
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-group" : "/${cluster_name}/${task_name}",
+        "awslogs-region": "${region}",
+        "awslogs-stream-prefix": "ecs",
+        "awslogs-create-group": "true"
+      }
+    }
+  }
+]
