@@ -26,7 +26,7 @@ variable container_memory {
 
 variable task_name {}
 
-variable domain_name {}
+variable app_domain_name {}
 variable subject_alternative_names {
   default = []
   type    = list(string)
@@ -68,4 +68,8 @@ variable public_key {}
 
 variable key_name {
   default = "bastion"
+}
+
+variable use_external_dns_hosted_zone {
+  default = false
 }
