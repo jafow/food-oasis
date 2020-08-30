@@ -2,7 +2,6 @@ locals {
   db_name = "${var.task_name}db"
 }
 
-
 data "template_file" "task_definition" {
   template = file("templates/task-definition.json")
   vars = {
@@ -118,7 +117,7 @@ resource "aws_ecs_service" "svc" {
 
   load_balancer {
     container_name   = var.container_name
-    container_port   = 80
+    container_port   = 5555
     target_group_arn = aws_lb_target_group.default.arn
   }
 
@@ -164,7 +163,7 @@ resource "aws_security_group" "db" {
 module "db" {
   source     = "terraform-aws-modules/rds/aws"
   version    = "~> 2.0"
-  identifier = "${var.stage}-${local.db_name}"
+  identifier = "${local.db_name}-${var.stage}"
 
   engine            = "postgres"
   engine_version    = "11.8"

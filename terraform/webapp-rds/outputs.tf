@@ -99,3 +99,11 @@ output app_hostname {
 output bastion_hostname {
   value = aws_route53_record.bastion.fqdn
 }
+
+output dns_zone_id {
+  value = aws_route53_zone.zone.zone_id
+}
+
+output dns_zone_name_servers {
+  value = aws_route53_zone.zone.name_servers
+}

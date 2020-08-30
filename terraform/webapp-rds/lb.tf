@@ -1,19 +1,14 @@
 # application load balancer 
 locals {
-  name = "${var.cluster_name}-${var.task_name}"
-}
-
-data "aws_route53_zone" "zone" {
-  name         = var.hosted_zone_name
-  private_zone = false
+  name = "${var.task_name}"
 }
 
 module "acm" {
   source  = "terraform-aws-modules/acm/aws"
   version = "~> v2.0"
 
-  domain_name = var.domain_name
-  zone_id     = data.aws_route53_zone.zone.id
+  domain_name = var.app_domain_name
+  zone_id     = tobool(var.use_external_dns_hosted_zone) ? var.hosted_zone_id : aws_route53_zone.zone.zone_id
 
   subject_alternative_names = var.subject_alternative_names
 
@@ -94,7 +89,7 @@ resource "aws_lb_listener" "https" {
 
 resource "aws_lb_target_group" "default" {
   name_prefix = substr(local.name, 0, 6)
-  port        = 80
+  port        = 5555
   protocol    = "HTTP"
   target_type = "ip"
   vpc_id      = module.network.vpc_id
