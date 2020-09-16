@@ -4,12 +4,13 @@ locals {
 }
 
 resource "aws_route53_zone" "zone" {
+  count = tobool(var.use_external_dns_hosted_zone) ? 0 : 1
   name    = var.hosted_zone_name
   comment = "Hosted zone where all DNS records will be kept for this account"
 }
 
 resource "aws_route53_record" "app_url" {
-  zone_id = var.use_external_dns_hosted_zone ? var.hosted_zone_id : aws_route53_zone.zone.zone_id
+  zone_id = tobool(var.use_external_dns_hosted_zone) ? var.hosted_zone_id : join("", aws_route53_zone.zone.*.zone_id)
   name    = var.app_domain_name
   type    = "A"
   alias {
@@ -20,7 +21,7 @@ resource "aws_route53_record" "app_url" {
 }
 
 resource "aws_route53_record" "db_url" {
-  zone_id = var.use_external_dns_hosted_zone ? var.hosted_zone_id : aws_route53_zone.zone.zone_id
+  zone_id = tobool(var.use_external_dns_hosted_zone) ? var.hosted_zone_id : join("", aws_route53_zone.zone.*.zone_id)
   name    = "${var.task_name}-db"
   type    = "A"
   alias {
@@ -31,7 +32,7 @@ resource "aws_route53_record" "db_url" {
 }
 
 resource "aws_route53_record" "bastion" {
-  zone_id = var.use_external_dns_hosted_zone ? var.hosted_zone_id : aws_route53_zone.zone.zone_id
+  zone_id = tobool(var.use_external_dns_hosted_zone) ? var.hosted_zone_id : join("", aws_route53_zone.zone.*.zone_id)
   name    = "bastion-${var.stage}-${var.region}"
   type    = "A"
   ttl     = 300

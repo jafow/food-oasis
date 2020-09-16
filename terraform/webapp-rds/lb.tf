@@ -8,7 +8,7 @@ module "acm" {
   version = "~> v2.0"
 
   domain_name = var.app_domain_name
-  zone_id     = tobool(var.use_external_dns_hosted_zone) ? var.hosted_zone_id : aws_route53_zone.zone.zone_id
+  zone_id     = tobool(var.use_external_dns_hosted_zone) ? var.hosted_zone_id : join("", aws_route53_zone.zone.*.zone_id)
 
   subject_alternative_names = var.subject_alternative_names
 
@@ -89,7 +89,7 @@ resource "aws_lb_listener" "https" {
 
 resource "aws_lb_target_group" "default" {
   name_prefix = substr(local.name, 0, 6)
-  port        = 5555
+  port        = var.container_port
   protocol    = "HTTP"
   target_type = "ip"
   vpc_id      = module.network.vpc_id

@@ -1,7 +1,7 @@
 [
   {
     "name": "${container_name}",
-    "image": "foodoasisla/foodoasisla:1.0.17.",
+    "image": "foodoasisla/foodoasisla:sha-f28ed86",
     "cpu": ${container_cpu},
     "memory": ${container_memory},
     "portMappings": [
@@ -16,6 +16,15 @@
         "awslogs-stream-prefix": "ecs",
         "awslogs-create-group": "true"
       }
+    },
+    "healthCheck": {
+      "command": [
+        "CMD-SHELL",
+        "node -e 'console.log(`healthy`);' || exit 1"
+      ],
+      "interval": 20,
+      "timeout": 10,
+      "retries": 5
     },
     "environment": [
       { "name": "PORT", "value": "5555" }

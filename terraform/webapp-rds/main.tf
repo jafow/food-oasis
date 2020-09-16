@@ -31,9 +31,16 @@ data "aws_iam_policy_document" "logs" {
       "logs:AssumeRole",
       "logs:CreateLogGroup",
       "logs:CreateLogStream",
-      "logs:PutLogEvents"
+      "logs:PutLogEvents",
     ]
     resources = ["*"]
+  }
+  statement {
+    sid = "SSMRead"
+    actions = [
+      "ssm:Get*"
+    ]
+    resources = ["arn:aws:ssm:${var.region}:${var.account_id}:parameter/${var.stage}/${var.task_name}/*"]
   }
 }
 
@@ -84,7 +91,7 @@ resource "aws_security_group" "svc_sg" {
   ingress {
     description     = "inbound from load balancer"
     from_port       = 80
-    to_port         = 80
+    to_port         = var.container_port
     protocol        = "tcp"
     security_groups = [aws_security_group.alb.id]
     self            = true
@@ -92,7 +99,7 @@ resource "aws_security_group" "svc_sg" {
   ingress {
     description     = "inbound https from load balancer"
     from_port       = 443
-    to_port         = 443
+    to_port         = var.container_port
     protocol        = "tcp"
     security_groups = [aws_security_group.alb.id]
     self            = true
@@ -100,7 +107,7 @@ resource "aws_security_group" "svc_sg" {
   egress {
     description     = "outbound traffic to the lb"
     from_port       = 80
-    to_port         = 80
+    to_port         = var.container_port
     protocol        = "tcp"
     security_groups = [aws_security_group.alb.id]
     self            = true
